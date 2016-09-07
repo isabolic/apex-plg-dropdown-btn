@@ -99,7 +99,12 @@
             iconTemplate = iconTemplate(this.options.config);
 
             this.options.$eleBtn.append(listTemplate);
-            this.options.$eleBtn.append(iconTemplate);
+
+            if(this.options.$eleBtn.find(".t-Button-label").length > 0){
+                this.options.$eleBtn.find(".t-Button-label").before(iconTemplate);
+            }else{
+                this.options.$eleBtn.append(iconTemplate);
+            }
 
             this.options.$eleBtn.addClass("dropdown-menu-btn");
             this.options.$listEl = this.options.$eleBtn.find("ul.dropdown-menu");
