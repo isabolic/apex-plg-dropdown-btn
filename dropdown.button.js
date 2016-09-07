@@ -13,7 +13,7 @@
                                 " <li class='dropdown-menu-item' title='{{text}}'><a href='{{value}}'>{{text}}</a></li>" +
                                 "{{/each}}" +
                             "</ul>",
-            icon        : "<span class='t-Icon pull-left t-Icon--left fa {{btnIcon}}' aria-hidden='true'></span>"
+            icon        : "<span class='t-Icon fa {{btnIcon}}' aria-hidden='true'></span>"
         }
     };
 

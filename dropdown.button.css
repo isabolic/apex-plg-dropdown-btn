@@ -51,6 +51,9 @@
   content: '';  
 }
 
+.dropdown-menu-btn .t-Icon.fa {
+    margin-right: 5px;
+}
 .dropdown-menu. li.dropdown-menu-item a:hover {
   background-color: white;
 }
