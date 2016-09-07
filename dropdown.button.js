@@ -56,6 +56,19 @@
         triggerEvent.apply(this, [evt,  $el]);
     };
 
+    var applyBtnStyle = function (){
+        if (this.options.$eleBtn.hasClass("t-Button--primary")){
+            this.options.$listEl.addClass("t-Button--primary");
+        }else if(this.options.$eleBtn.hasClass("t-Button--warning")){
+            this.options.$listEl.addClass("t-Button--warning");
+        }else if(this.options.$eleBtn.hasClass("t-Button--danger")){
+            this.options.$listEl.addClass("t-Button--danger");
+        }else if(this.options.$eleBtn.hasClass("t-Button--success")){
+            this.options.$listEl.addClass("t-Button--success");
+        }
+
+    };
+
     apex.plugins.dropDownButton = function(opts) {
         this.apexname = "DROP_DOWN_BUTTON";
         this.jsName = "apex.plugins.dropDownButton";
@@ -108,6 +121,7 @@
 
             this.options.$eleBtn.addClass("dropdown-menu-btn");
             this.options.$listEl = this.options.$eleBtn.find("ul.dropdown-menu");
+            applyBtnStyle.apply(this);
 
             this.options.$eleBtn.on("click", this.showHide.bind(this));
             this.options.$eleBtn.on("click", ".dropdown-menu-item", itemClick.bind(this, this.events[2]));
