@@ -26,7 +26,7 @@
         "internalName" : "DROP_DOWN_BUTTON",
         "type" : "Dynamic Action",
         "demo" : "https://apex.oracle.com/pls/apex/f?p=101959:3",
-        "previewImage" : ""
+        "previewImage" : "https://raw.githubusercontent.com/isabolic/apex-plg-dropdown-btn/master/dropdown.png"
       }
     }
   }
