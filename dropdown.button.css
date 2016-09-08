@@ -93,6 +93,8 @@
   border-bottom: transparent;
 }
 
+
+
 .dropdown-menu.t-Button--primary:hover,
 .dropdown-menu-btn.t-Button--primary:hover{
   background-color: #b5d3f2;
@@ -102,7 +104,11 @@
 }
 
 .dropdown-menu.t-Button--danger li.dropdown-menu-item a:hover {
-    background-color: #f3746d;
+  background-color: #f3746d;
+}
+
+.dropdown-menu.t-Button--warning li.dropdown-menu a:hover {
+  background-color: #fff0b4;
 }
 
 .dropdown-menu:after {
