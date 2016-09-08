@@ -65,6 +65,8 @@
             this.options.$listEl.addClass("t-Button--danger");
         }else if(this.options.$eleBtn.hasClass("t-Button--success")){
             this.options.$listEl.addClass("t-Button--success");
+        }else{
+            this.options.$listEl.addClass("normal");
         }
 
     };
