@@ -107,7 +107,7 @@
   background-color: #f3746d;
 }
 
-.dropdown-menu.t-Button--warning li.dropdown-menu a:hover {
+.dropdown-menu.t-Button--warning li.dropdown-menu-item a:hover {
   background-color: #fff0b4;
 }
 

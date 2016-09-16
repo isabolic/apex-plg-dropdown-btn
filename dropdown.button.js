@@ -1,6 +1,15 @@
 /**
  * [created by isabolic sabolic.ivan@gmail.com]
  */
+
+// workspace
+(function(){
+   if(window.apex.plugins === undefined){
+      window.apex.plugins = {};
+   }
+}());
+
+
 (function($, x) {
     var options = {
         $eleBtn          : null,
