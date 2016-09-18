@@ -2,7 +2,7 @@
 --  DDL for Package Body AX_PLG_DROP_DOWN
 --------------------------------------------------------
 
-  CREATE OR REPLACE PACKAGE BODY "PLAYGROUND"."AX_PLG_DROP_DOWN" as
+  CREATE OR REPLACE PACKAGE BODY "AX_PLG_DROP_DOWN" as
 
     gv_playground_host varchar2(100) := 'PLAYGROUND';
     

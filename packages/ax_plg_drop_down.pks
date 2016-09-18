@@ -2,7 +2,7 @@
 --  DDL for Package AX_PLG_DROP_DOWN
 --------------------------------------------------------
 
-  CREATE OR REPLACE PACKAGE "PLAYGROUND"."AX_PLG_DROP_DOWN" as 
+  CREATE OR REPLACE PACKAGE "AX_PLG_DROP_DOWN" as 
  type t_values is record (
       display_value         varchar2(4000)
      ,link_value            varchar2(4000)
