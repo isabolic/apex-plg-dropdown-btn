@@ -46,6 +46,14 @@
   content: '';  
 }
 
+.dropdown-menu-btn, 
+.dropdown-menu-btn.t-Button:hover, 
+.dropdown-menu-btn.a-Button:hover,
+.dropdown-menu-btn.t-Button:active, 
+.dropdown-menu-btn.a-Button:active{
+  z-index: initial;
+}
+
 .dropdown-menu-btn .t-Icon.fa {
     margin-right: 5px;
 }
