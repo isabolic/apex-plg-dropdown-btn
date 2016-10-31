@@ -15,14 +15,18 @@
         $eleBtn          : null,
         eleBtnSelector   : null,
         config           : null,
+        menuAlgn         : "LEFT",
+        menuWidthAsBtn   : "Y",
+        closeMenuBlur    : "Y",
         htmlTemplate     : {
-            devider     : "<li role='separator' class='divider'></li>",
-            List        :  "<ul class='dropdown-menu'>" +
+            buttonWrapper : "<div class='btn-group'>",
+            devider       : "<li role='separator' class='divider'></li>",
+            List          :  "<ul class='dropdown-menu'>" +
                                 "{{#each list}}" +
                                 " <li class='dropdown-menu-item' title='{{text}}'><a href='{{value}}'>{{text}}</a></li>" +
                                 "{{/each}}" +
                             "</ul>",
-            icon        : "<span class='t-Icon fa {{btnIcon}}' aria-hidden='true'></span>"
+            icon           : "<span class='t-Icon fa {{btnIcon}}' aria-hidden='true'></span>"
         }
     };
 
@@ -62,7 +66,7 @@
      * [itemClick - PRIVATE fn handler - trigger event "dropdownbutton-menu-item-click" when <li> is clicked]
      */
     var itemClick = function(evt, $el){
-        triggerEvent.apply(this, [evt,  $el]);
+        triggerEvent.apply($el, [evt,  $el]);
     };
 
     var applyBtnStyle = function (){
@@ -85,7 +89,7 @@
         this.jsName = "apex.plugins.dropDownButton";
         this.container = null;
         this.options = {};
-        this.events = ["dropdownbutton-menu-show", 
+        this.events = ["dropdownbutton-menu-show",
                        "dropdownbutton-menu-hide",
                        "dropdownbutton-menu-item-click"];
         this.init = function() {
@@ -110,8 +114,6 @@
                 throw this.jsName || ": Element button is required.";
             }
 
-            this.container =this.options.$eleBtn;
-
             // compile tempate
             this.options.config = $.parseJSON(this.options.config);
             replaceLink.call(this);
@@ -122,20 +124,36 @@
             iconTemplate = Handlebars.compile(this.options.htmlTemplate.icon);
             iconTemplate = iconTemplate(this.options.config);
 
-            this.options.$eleBtn.append(listTemplate);
-
             if(this.options.$eleBtn.find(".t-Button-label").length > 0){
                 this.options.$eleBtn.find(".t-Button-label").before(iconTemplate);
             }else{
                 this.options.$eleBtn.append(iconTemplate);
             }
 
+            this.container = this.options.$eleBtn.wrap(this.options.htmlTemplate.buttonWrapper).parent();
+            this.container.append(listTemplate);
             this.options.$eleBtn.addClass("dropdown-menu-btn");
-            this.options.$listEl = this.options.$eleBtn.find("ul.dropdown-menu");
+            this.options.$listEl = this.container.find("ul.dropdown-menu");
+
+            if(this.options.menuAlgn === "RIGHT"){
+                this.options.$listEl.addClass("right");
+            }
+
+            if(this.options.menuWidthAsBtn === "Y"){
+                this.options.$listEl.addClass("w100pc");
+            }
+
             applyBtnStyle.apply(this);
 
-            this.options.$eleBtn.on("click", this.showHide.bind(this));
-            this.options.$eleBtn.on("click", ".dropdown-menu-item", itemClick.bind(this, this.events[2]));
+            this.options.$eleBtn.on("click"   , this.showHide.bind(this));
+
+            if (this.options.closeMenuBlur === "Y"){
+                this.options.$eleBtn.on("focusout", this.showHide.bind(this));
+            }
+
+            this.options
+                .$listEl
+                .on("click", ".dropdown-menu-item", itemClick.bind(this, this.events[2]));
 
             return this;
         }
