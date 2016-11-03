@@ -148,7 +148,7 @@
             this.options.$eleBtn.on("click"   , this.showHide.bind(this));
 
             if (this.options.closeMenuBlur === "Y"){
-                this.options.$eleBtn.on("focusout", this.showHide.bind(this));
+                this.options.$eleBtn.on("focusout", this.showHide.bind(this, "close"));
             }
 
             this.options
