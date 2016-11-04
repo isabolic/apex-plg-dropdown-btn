@@ -18,6 +18,7 @@
         menuAlgn         : "LEFT",
         menuWidthAsBtn   : "Y",
         closeMenuBlur    : "Y",
+        slideUpDown      : 200,
         htmlTemplate     : {
             buttonWrapper : "<div class='btn-group'>",
             devider       : "<li role='separator' class='divider'></li>",
@@ -150,11 +151,15 @@
 
             applyBtnStyle.apply(this);
 
-            this.options.$eleBtn.on("click"   , this.showHide.bind(this));
+            this.options.$eleBtn.on("click", this.showHide.bind(this));
 
             this.options
                 .$listEl
-                .on("click", ".dropdown-menu-item a", itemClick.bind(this, this.events[2]));
+                .on("click", ".dropdown-menu-item", itemClick.bind(this, this.events[2]));
+
+            if (this.options.closeMenuBlur === "Y"){
+                this.options.$eleBtn.on("blur", this.showHide.bind(this, "hide"));
+            }
 
             return this;
         }
@@ -163,16 +168,23 @@
     };
 
     apex.plugins.dropDownButton.prototype = {
-        showHide:function showHide(action){
-            if(action !== "show" || action !== "hide"){
+        showHide:function showHide(action, evt){
+            //xDebug.call(this, arguments.callee.name, arguments);
+            // if element in the list is clicked (button losses focus)
+            if ($.isPlainObject(evt) &&
+                $(evt.relatedTarget).parent().hasClass("dropdown-menu-item")){
+                return;
+            }
+
+            if($.type(action) !== "string"){
                 action = this.options.$listEl.is(":visible") ? "hide" : "show";
             }
 
             if(action === "show"){
-                this.options.$listEl.slideDown("slow");
+                this.options.$listEl.slideDown(this.options.slideUpDown);
                 triggerEvent.apply(this, [this.events[0], this]);
             }else if(action === "hide"){
-                this.options.$listEl.slideUp("fast");
+                this.options.$listEl.slideUp(this.options.slideUpDown);
                 triggerEvent.apply(this, [this.events[1], this]);
             }
         }
