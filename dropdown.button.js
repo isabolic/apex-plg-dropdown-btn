@@ -66,7 +66,12 @@
      * [itemClick - PRIVATE fn handler - trigger event "dropdownbutton-menu-item-click" when <li> is clicked]
      */
     var itemClick = function(evt, $el){
-        triggerEvent.apply($el, [evt,  $el]);
+        triggerEvent.apply(this, [evt,  $el]);
+
+        if (this.options.closeMenuBlur === "Y"){
+            this.showHide.call(this, "hide");
+        }
+
     };
 
     var applyBtnStyle = function (){
@@ -147,13 +152,9 @@
 
             this.options.$eleBtn.on("click"   , this.showHide.bind(this));
 
-            if (this.options.closeMenuBlur === "Y"){
-                this.options.$eleBtn.on("focusout", this.showHide.bind(this, "close"));
-            }
-
             this.options
                 .$listEl
-                .on("click", ".dropdown-menu-item", itemClick.bind(this, this.events[2]));
+                .on("click", ".dropdown-menu-item a", itemClick.bind(this, this.events[2]));
 
             return this;
         }
