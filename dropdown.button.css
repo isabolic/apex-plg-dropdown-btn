@@ -1,3 +1,11 @@
+.t-HeroRegion,
+.t-BreadcrumbRegion-buttons,
+.container,
+.row {
+    overflow: visible !important;
+
+}
+
 .dropdown-menu {
     position: absolute;
     top: 100%;
