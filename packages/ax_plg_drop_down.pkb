@@ -6,6 +6,10 @@
 
     gv_playground_host varchar2(100) := 'PLAYGROUND';
 
+    g_display_col  constant number(1) := 1;
+    g_return_col   constant number(1) := 2;
+    g_icon_col     constant number(1) := 3;
+
     function f_is_playground return boolean is
     v_ax_workspace varchar2(200);
     begin
@@ -77,12 +81,22 @@
      v_page_num        varchar2(200);
      v_menu_algn       varchar2(10) := 'LEFT';
      v_menu_w_btn      varchar2(10) := 'N';
+     v_lov             apex_plugin_util.t_column_value_list;
     begin
        v_query          := p_dynamic_action.attribute_01;
        v_type           := p_dynamic_action.attribute_02;
        v_page_num       := p_dynamic_action.attribute_04;
        v_eleBtnSelector := p_dynamic_action.attribute_05;
        v_list_name      := p_dynamic_action.attribute_07;
+
+
+       -- During plug-in development it's very helpful to have some debug information
+       if apex_application.g_debug then
+          apex_plugin_util.debug_dynamic_action(
+            p_plugin                => p_plugin,
+            p_dynamic_action        => p_dynamic_action
+          );
+       end if;
 
        if p_dynamic_action.attribute_08 is not null then
           v_menu_algn      := p_dynamic_action.attribute_08;
@@ -96,6 +110,7 @@
        -- parse static2 value
        v_list_values    := p_dynamic_action.attribute_03;
 
+       /*
        if upper(substr(v_list_values,1,6)) = 'STATIC' then
           v_list_values := substr(v_list_values,8);
        elsif upper(substr(v_list_values,1,6)) = 'STATIC2' then
@@ -103,7 +118,7 @@
        else
           v_list_values := v_list_values;
        end if;
-
+       */
        apex_json.initialize_clob_output;
        apex_json.open_object;                                          -- {
        apex_json.write('btnIcon', p_dynamic_action.attribute_06);      --   "btnIcon":  fa-bars
@@ -136,7 +151,7 @@
 
 
        elsif v_type = 'LIST' then
-               for i in( select entry_text
+            for i in( select entry_text
                                ,entry_target
                            from apex_application_list_entries
                           where application_id = v_app
@@ -156,21 +171,34 @@
                              apex_json.close_object;                        -- }
               end loop;
        elsif v_type = 'SQL_QUERY' then
-            execute immediate v_query bulk collect into v_tab_values;
-            for indx in nvl (v_tab_values.first, 0) .. nvl (v_tab_values.last, -1)
-            loop
+
+            v_lov := apex_plugin_util.get_data(
+                   p_sql_statement  => v_query,
+                   p_min_columns    => 2,
+                   p_max_columns    => 3,
+                   p_component_name => p_dynamic_action.action
+            );
+
+             for i in 1 .. v_lov(g_display_col).count loop
                  apex_json.open_object;
 
-                 v_value := v_tab_values(indx).link_value;
+                 v_value := v_lov(g_return_col)(i);
+
                  if instr(v_value, 'http') = 0 and
                     is_numeric(v_value)    = 1 then
                     v_value := prepare_url(v_value);
                  end if;
 
-                 apex_json.write('value',  v_value                            );    --   "value":  xxx
-                 apex_json.write('text' , v_tab_values(indx).display_value    );    --   "v_display":  xxx
+                 apex_json.write('value', v_value               );
+                 apex_json.write('text' , v_lov(g_display_col)(i));
+
+                 if v_lov.exists(g_icon_col) then
+                    apex_json.write('icon' , v_lov(g_icon_col)(i));
+                 end if;
+
                  apex_json.close_object;
-            end loop;
+             end loop;
+
        elsif v_type = 'PAGE_NUMBERS' then
             v_static_list    := wwv_flow_utilities.string_to_table2(v_page_num,',');
 
@@ -190,6 +218,7 @@
 
              end loop;
        end if;
+
 
        apex_json.close_array;                    -- ]
        apex_json.close_object;                   -- }

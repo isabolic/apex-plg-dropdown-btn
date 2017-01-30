@@ -39,6 +39,7 @@ wwv_flow_api.create_plugin(
 'http://playground/ws/libs/handlebars-v4.0.5.js'))
 ,p_css_file_urls=>'http://playground/ws/dropdown.button.css'
 ,p_render_function=>'ax_plg_drop_down.dropdown_button'
+,p_standard_attributes=>'BUTTON:REQUIRED'
 ,p_substitute_attributes=>true
 ,p_subscribe_plugin_settings=>true
 ,p_version_identifier=>'1.1.3'
