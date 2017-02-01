@@ -1,15 +1,7 @@
-.t-HeroRegion,
-.t-BreadcrumbRegion-buttons,
-.container,
-.row {
-    overflow: visible !important;
 
-}
-
-.dropdown-menu {
+.btn-dropdown-menu{
+    background-color: white;
     position: absolute;
-    top: 100%;
-    left: 0;
     z-index: 1000;
     display: none;
     padding: 5px 0;
@@ -26,18 +18,9 @@
     box-shadow: 0 6px 12px rgba(0,0,0,.175);
 }
 
-.dropdown-menu.left{
-  left:0px;
-  right: auto;
-}
 
-.dropdown-menu.right{
-  right:0px;
-  left: auto;
-}
-
-.dropdown-menu.w100pc{
-  width: 100%;
+.dropdown-menu{
+  margin: 0px;
 }
 
 .btn-group{
@@ -53,12 +36,12 @@
     clear: both;
     font-weight: 400;
     line-height: 1.42857143;
-    color: #333;
+    color: inherit;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
+/*
 .dropdown-menu:before {
   position: absolute;
   height: 0px;
@@ -73,7 +56,7 @@
   border-bottom-color: rgba(0, 0, 0, 0.2);
   content: '';
 }
-
+*/
 .dropdown-menu-btn,
 .dropdown-menu-btn.t-Button:hover,
 .dropdown-menu-btn.a-Button:hover,
@@ -92,7 +75,7 @@
 .dropdown-menu.normal{
   background-color:#f8f8f8;
 }
-
+/*
 .dropdown-menu.t-Button--primary:hover,
 .dropdown-menu.t-Button--warning:hover,
 .dropdown-menu.t-Button--primary:focus,
@@ -161,6 +144,7 @@
   content: '';
 }
 
+*/
 
 
 

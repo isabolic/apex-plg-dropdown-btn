@@ -82,11 +82,18 @@
      v_menu_algn       varchar2(10) := 'LEFT';
      v_menu_w_btn      varchar2(10) := 'N';
      v_lov             apex_plugin_util.t_column_value_list;
+
+     cursor c_apx_list(p_app_id in number, p_list_name in varchar2) is
+       select ale.entry_text
+             ,ale.entry_target
+         from apex_application_list_entries ale
+        where ale.application_id = p_app_id
+          and ale.list_name      = p_list_name;
+
     begin
        v_query          := p_dynamic_action.attribute_01;
        v_type           := p_dynamic_action.attribute_02;
        v_page_num       := p_dynamic_action.attribute_04;
-       v_eleBtnSelector := p_dynamic_action.attribute_05;
        v_list_name      := p_dynamic_action.attribute_07;
 
 
@@ -106,11 +113,17 @@
           v_menu_w_btn    := p_dynamic_action.attribute_09;
        end if;
 
+       select max( '#'|| nvl(button_static_id,affected_button_id) )
+         into v_eleBtnSelector
+         from apex_application_page_da_acts da
+         join apex_application_page_buttons btns on (btns.button_id = da.affected_button_id)
+        where da.action_id = p_dynamic_action.id;
+
 
        -- parse static2 value
        v_list_values    := p_dynamic_action.attribute_03;
 
-       /*
+
        if upper(substr(v_list_values,1,6)) = 'STATIC' then
           v_list_values := substr(v_list_values,8);
        elsif upper(substr(v_list_values,1,6)) = 'STATIC2' then
@@ -118,7 +131,7 @@
        else
           v_list_values := v_list_values;
        end if;
-       */
+
        apex_json.initialize_clob_output;
        apex_json.open_object;                                          -- {
        apex_json.write('btnIcon', p_dynamic_action.attribute_06);      --   "btnIcon":  fa-bars
@@ -151,25 +164,58 @@
 
 
        elsif v_type = 'LIST' then
-            for i in( select entry_text
-                               ,entry_target
-                           from apex_application_list_entries
-                          where application_id = v_app
-                            and list_name      = v_list_name) loop
-                             apex_json.open_object;
 
-                             v_value := i.entry_target;
+            select max(al.list_query)
+              into v_query
+              from apex_application_lists al
+             where al.application_id = v_app
+               and al.list_name  = v_list_name;
 
-                             if instr(v_value, 'http') = 0 and
-                                get_page_id_from_list_entry(v_value) is not null then
-                                v_value := get_page_id_from_list_entry(v_value);
-                                v_value := prepare_url(v_value);
-                             end if;
+            if v_query is not null then
+                 v_lov := apex_plugin_util.get_data(
+                       p_sql_statement  => v_query,
+                       p_min_columns    => 2,
+                       p_max_columns    => 3,
+                       p_component_name => p_dynamic_action.action
+                  );
 
-                             apex_json.write('value',  v_value        );    --   "value":  xxx
-                             apex_json.write('text' ,  i.entry_text    );    --   "v_display":  xxx
-                             apex_json.close_object;                        -- }
-              end loop;
+                 for i in 1 .. v_lov(g_display_col).count loop
+                     apex_json.open_object;
+
+                     v_value := v_lov(g_return_col)(i);
+
+                     if instr(v_value, 'http') = 0 and
+                        is_numeric(v_value)    = 1 then
+                        v_value := prepare_url(v_value);
+                     end if;
+
+                     apex_json.write('value', v_value               );
+                     apex_json.write('text' , v_lov(g_display_col)(i));
+
+                     if v_lov.exists(g_icon_col) then
+                        apex_json.write('icon' , v_lov(g_icon_col)(i));
+                     end if;
+
+                     apex_json.close_object;
+                 end loop;
+            else
+                for i in c_apx_list(v_app,v_list_name) loop
+                     apex_json.open_object;
+
+                     v_value := i.entry_target;
+
+                     if instr(v_value, 'http') = 0 and
+                        get_page_id_from_list_entry(v_value) is not null then
+                        v_value := get_page_id_from_list_entry(v_value);
+                        v_value := prepare_url(v_value);
+                     end if;
+
+                     apex_json.write('value',  v_value         );    --   "value":  xxx
+                     apex_json.write('text' ,  i.entry_text    );    --   "v_display":  xxx
+                     apex_json.close_object;                        -- }
+                end loop;
+            end if;
+
        elsif v_type = 'SQL_QUERY' then
 
             v_lov := apex_plugin_util.get_data(

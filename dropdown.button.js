@@ -20,7 +20,7 @@
         closeMenuBlur    : "Y",
         slideUpDown      : 200,
         htmlTemplate     : {
-            buttonWrapper : "<div class='btn-group'>",
+            buttonWrapper : "<div class='btn-dropdown-menu'>",
             devider       : "<li role='separator' class='divider'></li>",
             List          :  "<ul class='dropdown-menu'>" +
                                 "{{#each list}}" +
@@ -64,6 +64,37 @@
     };
 
     /**
+     * [calculatePosition Private set position of container for dropdown after the element is visible]
+     */
+    var calculatePosition = function(){
+      var ele   = this.options.$eleBtn,
+          left  = ele.offset().left,
+          right = $(document).width() - (ele.offset().left + ele.outerWidth()),
+          top   = ele.offset().top + ele.outerHeight(true),
+          width = ele.outerWidth(),
+          style = {"top": top};
+
+      xDebug.call(this, arguments.callee.name, arguments);
+
+      if (ele.is(":visible") === true) {
+
+
+        if (this.options.menuAlgn === "RIGHT"){
+            style = $.extend(style, {"right": right});
+        }else{
+            style = $.extend(style, {"left": left});
+        }
+
+        if(this.options.menuWidthAsBtn === "Y"){
+            style = $.extend(style,{"width": width});
+        }
+
+        this.container.css(style);
+        this.isRendered = true;
+      }
+    }
+
+    /**
      * [itemClick - PRIVATE fn handler - trigger event "dropdownbutton-menu-item-click" when <li> is clicked]
      */
     var itemClick = function(evt, $el){
@@ -75,17 +106,37 @@
 
     };
 
+    /**
+     * [intervalFlag call passed function repeatedly "fnIntervat", stop only when flagForClear is set to true ]
+     * @param  {[type]} fnIntervat   [function for repeatedly call]
+     * @param  {[type]} flagForClear [key prop. on this scope]
+     * @param  {[type]} timer        [timer, def. 200]
+     */
+    var intervalFlag = function (fnIntervat, flagForClear, timer){
+      var interval;
+
+      xDebug.call(this, arguments.callee.name, arguments);
+
+      interval = setInterval(function(){
+                    fnIntervat.call(this);
+
+                    if (this[flagForClear]){
+                      clearInterval(interval);
+                    }
+                  }.bind(this), (timer || 200));
+    }
+
     var applyBtnStyle = function (){
         if (this.options.$eleBtn.hasClass("t-Button--primary")){
-            this.options.$listEl.addClass("t-Button--primary");
+            this.container.addClass("t-Button--primary");
         }else if(this.options.$eleBtn.hasClass("t-Button--warning")){
-            this.options.$listEl.addClass("t-Button--warning");
+            this.container.addClass("t-Button--warning");
         }else if(this.options.$eleBtn.hasClass("t-Button--danger")){
-            this.options.$listEl.addClass("t-Button--danger");
+            this.container.addClass("t-Button--danger");
         }else if(this.options.$eleBtn.hasClass("t-Button--success")){
-            this.options.$listEl.addClass("t-Button--success");
+            this.container.addClass("t-Button--success");
         }else{
-            this.options.$listEl.addClass("normal");
+            this.container.addClass("normal");
         }
 
     };
@@ -95,6 +146,7 @@
         this.jsName = "apex.plugins.dropDownButton";
         this.container = null;
         this.options = {};
+        this.isRendered = false;
         this.events = ["dropdownbutton-menu-show",
                        "dropdownbutton-menu-hide",
                        "dropdownbutton-menu-item-click"];
@@ -136,7 +188,8 @@
                 this.options.$eleBtn.append(iconTemplate);
             }
 
-            this.container = this.options.$eleBtn.wrap(this.options.htmlTemplate.buttonWrapper).parent();
+            this.container =  $(this.options.htmlTemplate.buttonWrapper);
+            $("body").append(this.container);
             this.container.append(listTemplate);
             this.options.$eleBtn.addClass("dropdown-menu-btn");
             this.options.$listEl = this.container.find("ul.dropdown-menu");
@@ -161,6 +214,20 @@
                 this.options.$eleBtn.on("blur", this.showHide.bind(this, "hide"));
             }
 
+            intervalFlag.call(
+              this, calculatePosition, "isRendered"
+            );
+
+            // reg. resize event
+            $(window).resize(function(){
+
+              this.isRendered = false;
+              intervalFlag.call(
+                  this, calculatePosition, "isRendered", 500
+              );
+
+            }.bind(this));
+
             return this;
         }
 
@@ -169,7 +236,7 @@
 
     apex.plugins.dropDownButton.prototype = {
         showHide:function showHide(action, evt){
-            //xDebug.call(this, arguments.callee.name, arguments);
+            xDebug.call(this, arguments.callee.name, arguments);
             // if element in the list is clicked (button losses focus)
             if ($.isPlainObject(evt) &&
                 $(evt.relatedTarget).parent().hasClass("dropdown-menu-item")){
@@ -180,11 +247,18 @@
                 action = this.options.$listEl.is(":visible") ? "hide" : "show";
             }
 
+            calculatePosition.call(this);
+
             if(action === "show"){
-                this.options.$listEl.slideDown(this.options.slideUpDown);
+                this.isRendered = false;
+                intervalFlag.call(
+                    this, calculatePosition, "isRendered", 500
+                );
+
+                this.container.slideDown(this.options.slideUpDown);
                 triggerEvent.apply(this, [this.events[0], this]);
             }else if(action === "hide"){
-                this.options.$listEl.slideUp(this.options.slideUpDown);
+                this.container.slideUp(this.options.slideUpDown);
                 triggerEvent.apply(this, [this.events[1], this]);
             }
         }
