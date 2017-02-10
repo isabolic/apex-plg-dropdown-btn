@@ -113,7 +113,7 @@
           v_menu_w_btn    := p_dynamic_action.attribute_09;
        end if;
 
-       select max( '#'|| nvl(button_static_id,affected_button_id) )
+       select max( '#'|| nvl(button_static_id, 'B' || affected_button_id) )
          into v_eleBtnSelector
          from apex_application_page_da_acts da
          join apex_application_page_buttons btns on (btns.button_id = da.affected_button_id)
