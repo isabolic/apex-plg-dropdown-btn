@@ -2,7 +2,7 @@
  * [created by isabolic sabolic.ivan@gmail.com]
  */
 
-// workspace
+// namespace
 (function(){
    if(window.apex.plugins === undefined){
       window.apex.plugins = {};
@@ -24,7 +24,14 @@
             devider       : "<li role='separator' class='divider'></li>",
             List          :  "<ul class='dropdown-menu'>" +
                                 "{{#each list}}" +
-                                " <li class='dropdown-menu-item' title='{{text}}'><a href='{{value}}'>{{text}}</a></li>" +
+                                  "<li class='dropdown-menu-item' title='{{text}}'>" +
+                                    '{{#if icon}}' +
+                                       "<span class='menu-icon'>" +
+                                         "<i class='fa  fa-fw {{icon}}' aria-hidden='true'></i>" +
+                                       "</span>" +
+                                    '{{/if}}'  +
+                                    "<span class='menu-item'><a href='{{value}}'>{{text}}</a></span>" +
+                                  "</li>" +
                                 "{{/each}}" +
                             "</ul>",
             icon           : "<span class='t-Icon fa {{btnIcon}}' aria-hidden='true'></span>"
@@ -46,7 +53,7 @@
      */
     var triggerEvent = function(evt, evtData) {
         xDebug.call(this, arguments.callee.name, arguments);
-        this.container.trigger(evt, [evtData]);
+        this.options.$eleBtn.trigger(evt, [evtData]);
         $(this).trigger(evt + "." + this.apexname, [evtData]);
     };
 
@@ -126,20 +133,47 @@
                   }.bind(this), (timer || 200));
     }
 
+    /**
+     * [applyBtnStyle PRIVATE apply button universal theme class on menu]
+     */
     var applyBtnStyle = function (){
+        var bgColor;
         if (this.options.$eleBtn.hasClass("t-Button--primary")){
             this.container.addClass("t-Button--primary");
+            bgColor = this.container.css("background-color");
         }else if(this.options.$eleBtn.hasClass("t-Button--warning")){
             this.container.addClass("t-Button--warning");
+            bgColor = this.container.css("background-color");
         }else if(this.options.$eleBtn.hasClass("t-Button--danger")){
             this.container.addClass("t-Button--danger");
+            bgColor = this.container.css("background-color");
         }else if(this.options.$eleBtn.hasClass("t-Button--success")){
             this.container.addClass("t-Button--success");
+            bgColor = this.container.css("background-color");
         }else{
             this.container.addClass("normal");
         }
 
+        if (bgColor !== undefined){
+          this.container.hover(function() {
+            this.container.css("background-color",bgColor);
+          }.bind(this));
+        }
     };
+
+    /**
+     * [applyWidthListItems PRIVATE apply menu item width,css]
+     */
+    var applyWidthListItems = function(){
+        $.map(this.container.find(".dropdown-menu-item"), function(el){
+            if ( $(el).find(".menu-icon").length > 0 ){
+                 $(el).find(".menu-item").css({"width":"70%"});
+                 $(el).find(".menu-icon").css({"width":"30%"});
+            }else{
+                 $(el).find(".menu-item").css({"width":"100%","padding":"3px 20px"});
+            }
+        }.bind(this));
+    }
 
     apex.plugins.dropDownButton = function(opts) {
         this.apexname = "DROP_DOWN_BUTTON";
@@ -168,7 +202,7 @@
 
             this.options.$eleBtn = $(this.options.eleBtnSelector);
 
-            if (this.options.$eleBtn === null) {
+            if (this.options.$eleBtn.length === 0) {
                 throw this.jsName || ": Element button is required.";
             }
 
@@ -208,7 +242,7 @@
 
             this.options
                 .$listEl
-                .on("click", ".dropdown-menu-item", itemClick.bind(this, this.events[2]));
+                .on("click", ".dropdown-menu-item, .menu-icon", itemClick.bind(this, this.events[2]));
 
             if (this.options.closeMenuBlur === "Y"){
                 this.options.$eleBtn.on("blur", this.showHide.bind(this, "hide"));
@@ -217,6 +251,8 @@
             intervalFlag.call(
               this, calculatePosition, "isRendered"
             );
+
+            applyWidthListItems.call(this);
 
             // reg. resize event
             $(window).resize(function(){
