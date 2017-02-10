@@ -25,11 +25,11 @@
             List          :  "<ul class='dropdown-menu'>" +
                                 "{{#each list}}" +
                                   "<li class='dropdown-menu-item' title='{{text}}'>" +
-                                    '{{#if icon}}' +
                                        "<span class='menu-icon'>" +
+                                         "{{#if icon}}" +
                                          "<i class='fa  fa-fw {{icon}}' aria-hidden='true'></i>" +
+                                         "{{/if}}" +
                                        "</span>" +
-                                    '{{/if}}'  +
                                     "<span class='menu-item'><a href='{{value}}'>{{text}}</a></span>" +
                                   "</li>" +
                                 "{{/each}}" +
@@ -107,10 +107,12 @@
     var itemClick = function(evt, $el){
         triggerEvent.apply(this, [evt,  $el]);
 
+        if ($($el.target).prop("tagName") !== "A" && $($el.currentTarget).find("a").length > 0){
+            window.location.href = $($el.currentTarget).find("a").attr("href");
+        }
         if (this.options.closeMenuBlur === "Y"){
             this.showHide.call(this, "hide");
         }
-
     };
 
     /**
@@ -160,20 +162,6 @@
           }.bind(this));
         }
     };
-
-    /**
-     * [applyWidthListItems PRIVATE apply menu item width,css]
-     */
-    var applyWidthListItems = function(){
-        $.map(this.container.find(".dropdown-menu-item"), function(el){
-            if ( $(el).find(".menu-icon").length > 0 ){
-                 $(el).find(".menu-item").css({"width":"70%"});
-                 $(el).find(".menu-icon").css({"width":"30%"});
-            }else{
-                 $(el).find(".menu-item").css({"width":"100%","padding":"3px 20px"});
-            }
-        }.bind(this));
-    }
 
     apex.plugins.dropDownButton = function(opts) {
         this.apexname = "DROP_DOWN_BUTTON";
@@ -242,7 +230,7 @@
 
             this.options
                 .$listEl
-                .on("click", ".dropdown-menu-item, .menu-icon", itemClick.bind(this, this.events[2]));
+                .on("click", ".dropdown-menu-item", itemClick.bind(this, this.events[2]));
 
             if (this.options.closeMenuBlur === "Y"){
                 this.options.$eleBtn.on("blur", this.showHide.bind(this, "hide"));
@@ -251,8 +239,6 @@
             intervalFlag.call(
               this, calculatePosition, "isRendered"
             );
-
-            applyWidthListItems.call(this);
 
             // reg. resize event
             $(window).resize(function(){
@@ -294,7 +280,7 @@
                 this.container.slideDown(this.options.slideUpDown);
                 triggerEvent.apply(this, [this.events[0], this]);
             }else if(action === "hide"){
-                this.container.slideUp(this.options.slideUpDown);
+                //this.container.slideUp(this.options.slideUpDown);
                 triggerEvent.apply(this, [this.events[1], this]);
             }
         }

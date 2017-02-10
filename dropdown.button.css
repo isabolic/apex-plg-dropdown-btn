@@ -42,14 +42,15 @@
 .dropdown-menu span.menu-icon,
 .dropdown-menu span.menu-item {
     display: inline-block;
-    padding: 3px 3px 3px 0px;
+    padding: 3px 20px 3px 0px;
     text-align: left;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .dropdown-menu span.menu-icon{
-    padding: 3px;
+    padding: 3px 6px 3px 10px;
 }
 
 .dropdown-menu-btn,
