@@ -157,8 +157,12 @@
         }
 
         if (bgColor !== undefined){
+
+          this.container.css("background-color",bgColor);
+
           this.container.hover(function() {
             this.container.css("background-color",bgColor);
+            this.container.css("box-shadow", "none");
           }.bind(this));
         }
     };

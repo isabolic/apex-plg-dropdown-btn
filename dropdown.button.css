@@ -1,6 +1,5 @@
 
 .btn-dropdown-menu{
-    background-color: white;
     position: absolute;
     z-index: 1000;
     display: none;
@@ -14,10 +13,16 @@
     border: 1px solid #ccc;
     border: 1px solid rgba(0,0,0,.15);
     border-radius: 4px;
+    /**
     -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
     box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    **/
 }
 
+.normal{
+    color: #000000;
+    background-color: white;
+}
 
 .dropdown-menu{
   margin: 0px;
