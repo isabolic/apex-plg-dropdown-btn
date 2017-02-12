@@ -280,7 +280,7 @@
                 this.container.slideDown(this.options.slideUpDown);
                 triggerEvent.apply(this, [this.events[0], this]);
             }else if(action === "hide"){
-                //this.container.slideUp(this.options.slideUpDown);
+                this.container.slideUp(this.options.slideUpDown);
                 triggerEvent.apply(this, [this.events[1], this]);
             }
         }
