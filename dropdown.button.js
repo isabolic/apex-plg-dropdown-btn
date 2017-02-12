@@ -19,6 +19,7 @@
         menuWidthAsBtn   : "Y",
         closeMenuBlur    : "Y",
         slideUpDown      : 200,
+        offsetItemWidth  : 5,
         htmlTemplate     : {
             buttonWrapper : "<div class='btn-dropdown-menu'>",
             devider       : "<li role='separator' class='divider'></li>",
@@ -61,6 +62,8 @@
      * [replaceLink - PRIVATE fn -  replace invalid link value with javascript:void(0)]
      */
     var replaceLink = function(){
+        xDebug.call(this, arguments.callee.name, arguments);
+
         this.options.config.list =
         $.map(this.options.config.list, function(item){
             if (!item.value){
@@ -105,6 +108,8 @@
      * [itemClick - PRIVATE fn handler - trigger event "dropdownbutton-menu-item-click" when <li> is clicked]
      */
     var itemClick = function(evt, $el){
+        xDebug.call(this, arguments.callee.name, arguments);
+
         triggerEvent.apply(this, [evt,  $el]);
 
         if ($($el.target).prop("tagName") !== "A" && $($el.currentTarget).find("a").length > 0){
@@ -140,6 +145,8 @@
      */
     var applyBtnStyle = function (){
         var bgColor;
+        xDebug.call(this, arguments.callee.name, arguments);
+
         if (this.options.$eleBtn.hasClass("t-Button--primary")){
             this.container.addClass("t-Button--primary");
             bgColor = this.container.css("background-color");
@@ -167,12 +174,32 @@
         }
     };
 
+    var menuItemWidth = function(){
+        xDebug.call(this, arguments.callee.name, arguments);
+
+        var buttonW = this.options.$eleBtn.outerWidth();
+
+        $.map(this.container.find(".dropdown-menu-item"), function(el){
+          if( $(el).find(".menu-icon").length > 0 ){
+            var mWidth =  buttonW - $(el).find(".menu-icon").outerWidth() -
+                          (  $(el).find(".menu-item").outerWidth() -
+                             $(el).find(".menu-item").width()
+                          ) - this.options.offsetItemWidth;
+
+            $(el).find(".menu-item").width(mWidth);
+          }
+        }.bind(this));
+        this.container.css("color","");
+        this.isSetMenuItemWidth = true;
+    };
+
     apex.plugins.dropDownButton = function(opts) {
         this.apexname = "DROP_DOWN_BUTTON";
         this.jsName = "apex.plugins.dropDownButton";
         this.container = null;
         this.options = {};
         this.isRendered = false;
+        this.isSetMenuItemWidth = false;
         this.events = ["dropdownbutton-menu-show",
                        "dropdownbutton-menu-hide",
                        "dropdownbutton-menu-item-click"];
@@ -248,11 +275,15 @@
             $(window).resize(function(){
 
               this.isRendered = false;
+              this.isSetMenuItemWidth = false;
+
               intervalFlag.call(
                   this, calculatePosition, "isRendered", 500
               );
 
             }.bind(this));
+
+            this.options.$eleBtn.data("dropDownButton", this);
 
             return this;
         }
@@ -281,12 +312,40 @@
                     this, calculatePosition, "isRendered", 500
                 );
 
+                if(this.options.menuWidthAsBtn === "Y" && this.isSetMenuItemWidth === false){
+                  this.container.css("cssText","color:transparent !important;");
+                }
+
                 this.container.slideDown(this.options.slideUpDown);
+
+                if(this.options.menuWidthAsBtn === "Y" && this.isSetMenuItemWidth === false){
+                  intervalFlag.call(
+                    this, menuItemWidth, "isSetMenuItemWidth", 500
+                  );
+                }
                 triggerEvent.apply(this, [this.events[0], this]);
             }else if(action === "hide"){
                 this.container.slideUp(this.options.slideUpDown);
                 triggerEvent.apply(this, [this.events[1], this]);
             }
+        },
+
+        offsetItemWidth: function(width, triggerRecalc){
+          xDebug.call(this, arguments.callee.name, arguments);
+
+          if(width !== undefined){
+            this.options.offsetItemWidth = width;
+          }
+
+          if (triggerRecalc === true){
+              this.isSetMenuItemWidth = false;
+
+              intervalFlag.call(
+                  this, menuItemWidth, "isSetMenuItemWidth", 500
+              );
+          }
+
+          return this.options.offsetItemWidth;
         }
     };
 
