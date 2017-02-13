@@ -261,10 +261,12 @@
 
             this.options
                 .$listEl
-                .on("click", ".dropdown-menu-item", itemClick.bind(this, this.events[2]));
+                .on("mousedown", ".dropdown-menu-item", itemClick.bind(this, this.events[2]));
 
             if (this.options.closeMenuBlur === "Y"){
-                this.container.on("blur", this.showHide.bind(this, "hide"));
+                this.options
+                    .$eleBtn
+                    .on("blur", this.showHide.bind(this, "hide"));
             }
 
             intervalFlag.call(
