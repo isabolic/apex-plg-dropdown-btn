@@ -1,6 +1,6 @@
 {
   "name" : "dropdown button",
-  "version" : "2",
+  "version" : "2.0.0",
   "description" : "DA plugin turns button into dropdown button",
   "keywords" : ["dropdown", "apex", "oracle", "plugin"],
   "homepage" : "https://github.com/isabolic/apex-plg-dropdown-btn",
