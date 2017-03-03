@@ -21,7 +21,7 @@
         slideUpDown      : 200,
         offsetItemWidth  : 5,
         htmlTemplate     : {
-            buttonWrapper : "<div class='btn-dropdown-menu'>",
+            buttonWrapper : "<div class='btn-dropdown-menu' tabindex='-1'>",
             devider       : "<li role='separator' class='divider'></li>",
             List          :  "<ul class='dropdown-menu'>" +
                                 "{{#each list}}" +
@@ -114,9 +114,6 @@
 
         if ($($el.target).prop("tagName") !== "A" && $($el.currentTarget).find("a").length > 0){
             window.location.href = $($el.currentTarget).find("a").attr("href");
-        }
-        if (this.options.closeMenuBlur === "Y"){
-            this.showHide.call(this, "hide");
         }
     };
 
@@ -264,8 +261,8 @@
                 .on("mousedown", ".dropdown-menu-item", itemClick.bind(this, this.events[2]));
 
             if (this.options.closeMenuBlur === "Y"){
-                this.options
-                    .$eleBtn
+                  this
+                    .container
                     .on("blur", this.showHide.bind(this, "hide"));
             }
 
@@ -308,7 +305,7 @@
 
             calculatePosition.call(this);
 
-            if(action === "show"){
+            if(action === "show" && this.container.is(':visible') === false){
                 this.isRendered = false;
                 intervalFlag.call(
                     this, calculatePosition, "isRendered", 500
@@ -319,6 +316,7 @@
                 }
 
                 this.container.slideDown(this.options.slideUpDown);
+                this.container.focus();
 
                 if(this.options.menuWidthAsBtn === "Y" && this.isSetMenuItemWidth === false){
                   intervalFlag.call(
@@ -326,7 +324,7 @@
                   );
                 }
                 triggerEvent.apply(this, [this.events[0], this]);
-            }else if(action === "hide"){
+            }else if(action === "hide" && this.container.is(':visible') === true){
                 this.container.slideUp(this.options.slideUpDown);
                 triggerEvent.apply(this, [this.events[1], this]);
             }
