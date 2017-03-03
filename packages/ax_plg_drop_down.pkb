@@ -252,7 +252,8 @@
                 select max(page_title)
                   into v_display
                   from apex_application_pages
-                 where page_id = v_static_list(i);
+                 where page_id = v_static_list(i)
+                   and application_id = v_app;
 
                  v_value := v_static_list(i);
                  v_value := prepare_url(v_value);
