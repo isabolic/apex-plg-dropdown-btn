@@ -112,7 +112,8 @@
 
         triggerEvent.apply(this, [evt,  $el]);
 
-        if ($($el.target).prop("tagName") !== "A" && $($el.currentTarget).find("a").length > 0){
+        if (    $($el.currentTarget).find("a").length > 0
+             && $($el.currentTarget).find("a").attr("href") !== undefined){
             window.location.href = $($el.currentTarget).find("a").attr("href");
         }
     };
