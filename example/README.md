@@ -1,5 +1,5 @@
 
-## Oracle apex plugins- dropdown button - example
+## Oracle apex application example for dropdown button plugin
 In your apex workspace:
 1) [X] select import application and select to **f116.sql** file
 2) [X] for **"File type"** select **"Database Application, Page or Component Export"**
